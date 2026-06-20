@@ -1,0 +1,15 @@
+node_modules
+**/node_modules
+dist
+dist-player
+**/dist
+**/dist-player
+.processfox-data
+.git
+.github
+*.log
+.env
+.env.*
+coverage
+*.tsbuildinfo
+.DS_Store

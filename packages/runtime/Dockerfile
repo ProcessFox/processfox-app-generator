@@ -1,13 +1,16 @@
 # Frontend image (generator SPA) — built from the monorepo root context.
 # Usage: docker build -f packages/runtime/Dockerfile -t processfox-frontend .
 
-FROM node:22-alpine AS build
+FROM node:22-slim AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY packages/core/package.json packages/core/package.json
 COPY packages/runtime/package.json packages/runtime/package.json
 COPY packages/agent/package.json packages/agent/package.json
-RUN npm ci
+# `npm install` (not ci): re-resolves platform-specific native optional deps
+# (tailwind oxide, lightningcss, rollup) for the build platform. --include=dev
+# guarantees build tooling even if NODE_ENV=production is set in the environment.
+RUN npm install --include=dev --no-audit --no-fund
 COPY . .
 RUN npm run build -w @processfox/runtime
 
