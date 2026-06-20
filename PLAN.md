@@ -80,9 +80,15 @@ rein statisch – keine Infrastruktur nötig.
 
 ## 7. Modul-Roadmap V1 (browser-only)
 
-- **Input:** XLSX-Upload, CSV-Upload, manuelles Formular, Datei-Upload
-- **Transform:** Spalten-Mapping, Filter/Sortierung, Template-Merge
-- **Output:** DOCX-Template, PDF, XLSX/CSV-Export, ZIP-Bündel
+- **Input:** XLSX-Upload ✅, CSV-Upload ✅, manuelles Formular (offen), Datei-Upload (offen)
+- **Transform:** Spalten-Mapping ✅, Filter & Sortierung ✅
+- **Output:** DOCX-Vorlage ✅, CSV-Export ✅, XLSX-Export ✅, PDF (offen), ZIP-Bündel (offen)
+
+Modul-Code wird **lazy geladen** (ein Chunk pro Modul): Eine App lädt nur die
+tatsächlich genutzten Module/Libs. Generator-Hauptbundle dadurch 822 kB → 222 kB;
+`xlsx`/`docxtemplater` sind separate Chunks. (Der Single-File-Export bündelt
+weiterhin alle Module — eine self-contained Datei; per-App-Slimming wäre ein
+eigener Build und ist V2.)
 
 ---
 
@@ -93,7 +99,7 @@ rein statisch – keine Infrastruktur nötig.
 3. **M3 – Generator-Agent:** Tool-Use-Loop, Prompt → Manifest, Live-Vorschau. ✅
 4. **M4 – Editor:** Design-Anpassung (Theme-Tokens), Persistenz/Versionierung. ✅
 5. **M5 – Export & Coolify-Deployment.** ✅
-6. **M6 – Modul-Ausbau + Härtung.** ← *als Nächstes*
+6. **M6 – Modul-Ausbau + Härtung (Lazy-Loading).** ✅
 
 ---
 

@@ -30,6 +30,20 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      # Node 22 has global fetch; hits GET /api/health.
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:8787/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      # Backend runs `prisma db push` before listening.
+      start_period: 30s
 
   frontend:
     build:
@@ -39,7 +53,8 @@ services:
     ports:
       - '8080:80'
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
 volumes:
   pgdata:

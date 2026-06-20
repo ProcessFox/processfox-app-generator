@@ -1,10 +1,39 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
 dist-player/
+*.tsbuildinfo
+
+# Caches
+.vite/
+.cache/
+*.tgz
+
+# Logs
 *.log
-.DS_Store
+npm-debug.log*
+
+# Tests
+coverage/
+
+# Environment / secrets
 .env
 .env.*
 !.env.example
-coverage/
+
+# App data (local file store)
 .processfox-data/
+
+# Prisma local artifacts (generated client lives in node_modules; commit migrations/)
+prisma/*.db
+*.db-journal
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*~
+.claude/settings.local.json
