@@ -1,0 +1,14 @@
+{
+  "name": "processfox",
+  "private": true,
+  "version": "0.0.0",
+  "description": "ProcessFox – Business-App-Generator (modulbasiert, browser-only V1)",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  }
+}

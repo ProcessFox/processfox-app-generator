@@ -1,0 +1,31 @@
+// ProcessFox app-spec persistence (production store on Postgres).
+// Run `prisma generate` then `prisma migrate deploy` at deployment time.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model App {
+  id            String       @id @default(cuid())
+  name          String
+  latestVersion Int          @default(1)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  versions      AppVersion[]
+}
+
+model AppVersion {
+  id        String   @id @default(cuid())
+  app       App      @relation(fields: [appId], references: [id], onDelete: Cascade)
+  appId     String
+  version   Int
+  manifest  Json
+  createdAt DateTime @default(now())
+
+  @@unique([appId, version])
+}

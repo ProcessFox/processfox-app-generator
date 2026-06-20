@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "runtime",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "-w", "@processfox/runtime"],
+      "port": 5173
+    }
+  ]
+}
