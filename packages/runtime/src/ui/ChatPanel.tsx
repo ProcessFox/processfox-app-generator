@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import type { StreamEvent } from '../lib/agentStream.js';
 import { ThinkingStream } from './ThinkingStream.js';
+import { Markdown } from './Markdown.js';
 import { Button, TextArea } from './primitives.js';
 
 export interface ChatMessage {
@@ -60,8 +61,8 @@ export function ChatPanel({
                 <ThinkingStream events={m.events} active={false} />
               )}
               {m.text && (
-                <div className="max-w-[90%] rounded-card bg-level3 px-3 py-2 text-sm text-fg-secondary">
-                  {m.text}
+                <div className="max-w-[90%] rounded-card bg-level3 px-3 py-2">
+                  <Markdown>{m.text}</Markdown>
                 </div>
               )}
             </div>
