@@ -3,6 +3,9 @@
 
 FROM node:22-slim AS build
 WORKDIR /app
+# Raise the V8 heap so the Vite/Rollup bundle doesn't hit the default heap limit
+# on constrained build hosts.
+ENV NODE_OPTIONS=--max-old-space-size=4096
 COPY package.json package-lock.json ./
 COPY packages/core/package.json packages/core/package.json
 COPY packages/runtime/package.json packages/runtime/package.json
