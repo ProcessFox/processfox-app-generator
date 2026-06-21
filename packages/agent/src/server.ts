@@ -5,7 +5,8 @@ import {
   validateManifest,
   type AppManifest,
 } from '@processfox/core';
-import { runAgent, type ModelCaller } from './loop.js';
+import { runAgent, type AgentEvent, type ModelCaller } from './loop.js';
+import { ConversationStore } from './conversations.js';
 import { createAnthropicCaller } from './anthropic.js';
 import { createStore } from './store/createStore.js';
 import type { SpecStore } from './store/types.js';
@@ -24,6 +25,7 @@ export interface ServerOptions {
  *   GET  /api/health
  *   GET  /api/modules
  *   POST /api/generate            { prompt } -> { manifest, valid, errors, ... }
+ *   POST /api/generate/stream     { prompt, conversationId? } -> SSE progress + { done }
  *   POST /api/apps                { name?, manifest } -> { id, version }
  *   POST /api/apps/:id/versions   { manifest } -> { id, version }
  *   GET  /api/apps                -> StoredApp[]
@@ -34,7 +36,13 @@ export function buildServer(options: ServerOptions = {}) {
   const app = Fastify({ logger: true });
   const registry = new ModuleRegistry(builtinModules);
   const store = options.store ?? createStore();
+  const conversations = new ConversationStore(registry);
   const requireApiKey = options.requireApiKey ?? true;
+
+  /** True when generation can run (a caller is injected or an API key exists). */
+  function canGenerate(): boolean {
+    return Boolean(options.modelCaller) || !requireApiKey || Boolean(process.env.ANTHROPIC_API_KEY);
+  }
 
   /** Validate a manifest payload; returns errors to send (or null when valid). */
   function manifestErrors(manifest: unknown): string[] | null {
@@ -55,12 +63,54 @@ export function buildServer(options: ServerOptions = {}) {
     if (typeof prompt !== 'string' || prompt.trim().length === 0) {
       return reply.code(400).send({ error: 'prompt (non-empty string) is required' });
     }
-    const caller = options.modelCaller;
-    if (!caller && requireApiKey && !process.env.ANTHROPIC_API_KEY) {
+    if (!canGenerate()) {
       return reply.code(503).send({ error: 'ANTHROPIC_API_KEY is not configured on the server' });
     }
-    return runAgent(prompt, registry, caller ?? createAnthropicCaller());
+    return runAgent(prompt, registry, options.modelCaller ?? createAnthropicCaller());
   });
+
+  /**
+   * Streaming generation + multi-turn editing. Server-Sent Events: emits the
+   * conversation id, then agent progress events (so the UI shows "thinking"
+   * live), then a final { type: 'done', result }. Pass conversationId to refine
+   * the app built in a previous turn.
+   */
+  app.post<{ Body: { prompt?: string; conversationId?: string } }>(
+    '/api/generate/stream',
+    async (request, reply) => {
+      const prompt = request.body?.prompt;
+      if (typeof prompt !== 'string' || prompt.trim().length === 0) {
+        return reply.code(400).send({ error: 'prompt (non-empty string) is required' });
+      }
+      if (!canGenerate()) {
+        return reply.code(503).send({ error: 'ANTHROPIC_API_KEY is not configured on the server' });
+      }
+
+      reply.raw.writeHead(200, {
+        'content-type': 'text/event-stream',
+        'cache-control': 'no-cache, no-transform',
+        connection: 'keep-alive',
+      });
+      const send = (data: unknown) => reply.raw.write(`data: ${JSON.stringify(data)}\n\n`);
+
+      const { id, conversation } = conversations.resolve(request.body?.conversationId);
+      send({ type: 'conversation', conversationId: id });
+
+      const caller = options.modelCaller ?? createAnthropicCaller();
+      try {
+        const result = await conversation.send(prompt, caller, {
+          onEvent: (event: AgentEvent) => send(event),
+        });
+        send({ type: 'done', result });
+      } catch (err) {
+        request.log.error(err);
+        send({ type: 'error', error: err instanceof Error ? err.message : String(err) });
+      } finally {
+        reply.raw.end();
+      }
+      return reply;
+    },
+  );
 
   app.post<{ Body: { name?: string; manifest?: unknown } }>('/api/apps', async (request, reply) => {
     const errors = manifestErrors(request.body?.manifest);

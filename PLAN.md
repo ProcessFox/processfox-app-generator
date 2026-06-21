@@ -66,15 +66,25 @@ Pro Modul ein Badge „läuft lokal im Browser".
 - **Browser-Libs der Module:** SheetJS (`xlsx`), docxtemplater, `pdf-lib`/`pdfmake`,
   `JSZip`, `file-saver`. Schemas/Validierung: `zod`.
 - **Backend (nur Generator):** Node + Fastify, `@anthropic-ai/sdk`.
-- **Persistenz:** PostgreSQL + Prisma (versionierte App-Specs). Auth nur für Ersteller.
+- **Persistenz (V1):** File-Store (`FileSpecStore`, versionierte JSON-Specs auf Volume).
+  PostgreSQL+Prisma-Pfad ist im Code vorhanden, aber dormant (über `DATABASE_URL`
+  reaktivierbar). Auth nur für Ersteller.
 
 ---
 
 ## 6. Deployment (Coolify / Hetzner)
 
-`docker-compose`: `frontend` (Nginx, statisch), `backend` (Node), `postgres`.
-`ANTHROPIC_API_KEY` als Coolify-Secret. TLS via Coolify. Exportierte Endnutzer-Apps sind
-rein statisch – keine Infrastruktur nötig.
+**Images werden in GitHub Actions gebaut** (`.github/workflows/deploy.yml`) und nach GHCR
+gepusht; Coolify **zieht** sie nur (Build-Pack „Docker Compose"). So baut die 4-GB-Box
+nichts — entscheidend, weil der Vite-Build dort sonst den RAM sprengt.
+
+`docker-compose.yml`: zwei Services — `frontend` (Nginx, statische SPA + serviert
+`/player.html` für den Export) und `backend` (Node/Fastify, File-Store auf Volume `pfdata`).
+Kein Datenbank-Container in V1. Das Frontend veröffentlicht **keinen Host-Port** (`expose: 80`);
+Coolifys Proxy routet die Domain dorthin und macht TLS. `ANTHROPIC_API_KEY` als Coolify-Env.
+Exportierte Endnutzer-Apps sind eine einzelne HTML-Datei – keine Infrastruktur nötig.
+
+Details und Schritt-für-Schritt: [DEPLOY.md](DEPLOY.md).
 
 ---
 
@@ -116,8 +126,10 @@ eigener Build und ist V2.)
 ```
 processfox-app-generator/
 ├── PLAN.md
+├── README.md · CLAUDE.md   # Überblick · Arbeitsleitfaden
 ├── DEPLOY.md               # M5: Coolify/Docker-Anleitung
-├── docker-compose.yml      # M5: frontend + backend + postgres
+├── docker-compose.yml      # M5: frontend + backend (image:-basiert, Coolify zieht)
+├── .github/workflows/deploy.yml   # M5: CI baut Images → GHCR
 ├── .env.example
 ├── package.json            # npm workspaces
 └── packages/
@@ -132,15 +144,15 @@ processfox-app-generator/
     │   ├── src/player/     # M5: StandalonePlayer + Entry (eingebettetes Manifest)
     │   ├── src/export/     # M5: Single-File-Export (Re-Export aus core) + CLI
     │   ├── player.html · vite.player.config.ts   # M5: Single-File-Build → dist-player/
-    │   ├── Dockerfile · nginx.conf               # M5: Frontend-Image
+    │   ├── Dockerfile · nginx.conf               # M5: Frontend-Image (baut SPA + Player)
     │   └── test/           # engine, impl-run, end-to-end, export
-    └── agent/              # M3–M5: Generator-Agent + Persistenz + Export-Endpoint
+    └── agent/              # M3–M5: Generator-Agent + Persistenz
         ├── src/tools.ts    # list_modules / get_module_schema / propose_app (+ Validator-Loop)
         ├── src/loop.ts     # modell-agnostischer Tool-Use-Loop (mit Mock testbar)
         ├── src/anthropic.ts# realer ModelCaller (claude-opus-4-8)
-        ├── src/store/      # SpecStore: File (default) + Prisma (Postgres) + Auswahl per Env
-        ├── src/server.ts   # /api/generate, /api/apps (+Versionen, +Export), /api/modules|health
-        ├── prisma/ · Dockerfile                  # M5: Postgres-Schema + Backend-Image
+        ├── src/store/      # SpecStore: File (V1-Default) + Prisma (dormant) + Auswahl per Env
+        ├── src/server.ts   # /api/generate, /api/apps (+Versionen), /api/modules|health
+        ├── prisma/ · Dockerfile                  # Schema (dormant) · Backend-Image (Node, kein Vite)
         └── test/           # tools, loop, store, server (inject)
 ```
 
