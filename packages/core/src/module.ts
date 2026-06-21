@@ -36,6 +36,13 @@ export interface ModuleDefinition {
   title: string;
   /** Description handed to the KI agent to decide when to use this module. */
   description: string;
+  /**
+   * Guidance for the KI agent on *how* to use this module: when to pick it,
+   * how to choose its config, typical setups and pitfalls. Surfaced via
+   * `get_module_schema` so the agent can make concrete, well-configured
+   * suggestions to the user. Plain prose; may be multi-line.
+   */
+  usage?: string;
   /** Typed inputs. Input modules usually have none. */
   inputs: Port[];
   /** Typed outputs. Output modules usually have none. */

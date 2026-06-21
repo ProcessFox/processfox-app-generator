@@ -132,6 +132,7 @@ export function dispatchTool(
           category: def.category,
           title: def.title,
           description: def.description,
+          usage: def.usage,
           inputs: def.inputs,
           outputs: def.outputs,
           dependencies: def.dependencies,

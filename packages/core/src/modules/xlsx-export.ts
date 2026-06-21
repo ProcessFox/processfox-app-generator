@@ -13,11 +13,15 @@ export const xlsxExport: ModuleDefinition = {
   title: 'XLSX-Export',
   description:
     'Writes a record list (or table) to a downloadable Excel (.xlsx) file. Use as the final step when the user wants the processed data back as a spreadsheet.',
+  usage:
+    'The final step when the user wants the processed data back as an Excel file. ' +
+    'Set sheetName to something meaningful for the content (e.g. "Rechnungen"); it is the tab name inside the workbook. ' +
+    'Give filename a descriptive, .xlsx-ending name (e.g. "auswertung.xlsx").',
   inputs: [{ id: 'records', label: 'Datensätze', type: 'recordList', required: true }],
   outputs: [{ id: 'document', label: 'Excel-Datei', type: 'binary' }],
   configSchema: z.object({
-    sheetName: z.string().default('Daten'),
-    filename: z.string().default('export.xlsx'),
+    sheetName: z.string().default('Daten').describe('Name of the worksheet (tab) inside the .xlsx file.'),
+    filename: z.string().default('export.xlsx').describe('Download filename; should end in .xlsx.'),
   }),
   dependencies: ['xlsx'],
   credentials: [],
