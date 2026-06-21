@@ -1,12 +1,11 @@
 # Deployment (Coolify / Hetzner)
 
-ProcessFox ships as three containers, definiert in [`docker-compose.yml`](docker-compose.yml):
+ProcessFox ships as two containers, definiert in [`docker-compose.yml`](docker-compose.yml):
 
 | Service | Inhalt | Port |
 |---|---|---|
 | `frontend` | Generator-SPA (statisch via nginx, proxyt `/api` → backend) | 80 (→ 8080 lokal) |
-| `backend` | Agent + Persistenz + Export (Fastify) | 8787 |
-| `postgres` | App-Spec-Speicher | 5432 |
+| `backend` | Agent + Persistenz (Fastify, File-Store auf Volume) | 8787 |
 
 Der **API-Key bleibt im Backend** — die SPA spricht das Backend nur über den nginx-Proxy an.
 
@@ -40,21 +39,24 @@ push → GitHub Actions: baut frontend+backend → pusht ghcr.io/<owner>/process
    - `COOLIFY_TOKEN` = Coolify-API-Token
    Ohne diese Secrets überspringt der Workflow den Deploy-Schritt — dann einfach in
    Coolify **Redeploy** klicken, sobald die Action grün ist.
-4. **Environment-Variablen** in Coolify (siehe [`.env.example`](.env.example)):
-   `ANTHROPIC_API_KEY`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`.
-   `DATABASE_URL` wird in der Compose-Datei daraus gebaut — nicht separat setzen.
+4. **Environment-Variable** in Coolify (siehe [`.env.example`](.env.example)):
+   nur `ANTHROPIC_API_KEY`.
 5. **Domain** auf den `frontend`-Service (Port 80) zeigen lassen; Coolify übernimmt TLS.
 
 > Falls dein GHCR-Owner nicht `processfox` ist: in Coolify die Variablen
 > `FRONTEND_IMAGE` / `BACKEND_IMAGE` auf die korrekten Image-Pfade setzen.
 
-Beim Start synchronisiert das Backend das Schema (`prisma db push`) und startet dann.
-
 ## Persistenz-Backend
 
-- **Mit `DATABASE_URL`** (Compose-Default): Postgres via Prisma (`PrismaSpecStore`).
-- **Ohne `DATABASE_URL`**: dateibasierter Store (`FileSpecStore`) unter `PROCESSFOX_DATA_DIR`
-  (für lokale Entwicklung; in Produktion ein Volume mounten, sonst gehen Specs bei Redeploy verloren).
+V1 nutzt den **File-Store** (`FileSpecStore`): App-Specs werden als versionierte JSON-
+Dateien unter `PROCESSFOX_DATA_DIR` (`/data`) gespeichert. Compose mountet dafür das
+Volume `pfdata`, sodass die Specs **Redeploys überleben**. Kein Datenbank-Container nötig.
+
+> **Postgres später:** Der Code unterstützt einen `PrismaSpecStore` (aktiviert sich, wenn
+> `DATABASE_URL` gesetzt ist). Er ist im Repo dormant (`packages/agent/src/store/`,
+> `prisma/schema.prisma`); für die Aktivierung müssten Prisma-Deps + ein
+> `prisma generate`-Schritt wieder eingebunden werden. Für ein Single-Host-V1 ist der
+> File-Store ausreichend.
 
 ## App-Export
 

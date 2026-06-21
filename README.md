@@ -101,7 +101,8 @@ fertige, eigenständige HTML-Datei herunter — ohne Backend.
 
 ## Deployment
 
-Drei Container (frontend / backend / postgres) via [`docker-compose.yml`](docker-compose.yml).
+Zwei Container (frontend / backend) via [`docker-compose.yml`](docker-compose.yml); Images
+werden in GitHub Actions gebaut, Coolify zieht sie nur.
 Anleitung für **Coolify / Hetzner**: siehe [DEPLOY.md](DEPLOY.md). Der Backend-Container
 hat einen Healthcheck auf `/api/health`; das Frontend startet erst, wenn das Backend
 gesund ist.
@@ -110,7 +111,7 @@ gesund ist.
 
 - **Frontend:** React, Vite, Tailwind CSS, SheetJS (`xlsx`), docxtemplater
 - **Backend:** Node, Fastify, Anthropic SDK (`claude-opus-4-8`)
-- **Persistenz:** Postgres via Prisma (Produktion) bzw. Datei-Store (Entwicklung)
+- **Persistenz:** File-Store auf Volume (V1); Postgres-via-Prisma-Pfad im Code vorhanden, aber dormant
 - **Validierung/Schemas:** Zod
 
 ## Weitere Dokumente

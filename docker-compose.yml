@@ -1,35 +1,20 @@
-# ProcessFox — frontend (generator SPA), backend (agent + persistence), and
-# Postgres. Images are built in CI (GitHub Actions → GHCR); Coolify only pulls
-# and runs them, so the server never builds. Override *_IMAGE if your GHCR owner
-# differs from "processfox".
+# ProcessFox — frontend (generator SPA) + backend (agent + persistence).
+# Images are built in CI (GitHub Actions → GHCR); Coolify only pulls and runs
+# them, so the server never builds. V1 persistence uses the file store on a
+# volume (no database). Override *_IMAGE if your GHCR owner differs from
+# "processfox".
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
   backend:
     image: ${BACKEND_IMAGE:-ghcr.io/processfox/processfox-backend:latest}
     pull_policy: always
     restart: unless-stopped
     environment:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       PORT: '8787'
-    depends_on:
-      postgres:
-        condition: service_healthy
+      PROCESSFOX_DATA_DIR: /data
+    volumes:
+      - pfdata:/data
     healthcheck:
       # Node 22 has global fetch; hits GET /api/health.
       test:
@@ -42,8 +27,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      # Backend runs `prisma db push` before listening.
-      start_period: 30s
+      start_period: 15s
 
   frontend:
     image: ${FRONTEND_IMAGE:-ghcr.io/processfox/processfox-frontend:latest}
@@ -56,4 +40,4 @@ services:
         condition: service_healthy
 
 volumes:
-  pgdata:
+  pfdata:

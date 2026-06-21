@@ -102,10 +102,12 @@ over-steering.
 - **One Vite version.** `vitest` pulled Vite 5 and `runtime` wanted Vite 6 →
   type-identity clash in `vite.config.ts`. Everything is pinned to **Vite 5**;
   keep it aligned if you bump.
-- **Prisma is optional locally.** `@prisma/client` is an `optionalDependency`;
-  `prismaStore.ts` loads it via a non-literal dynamic import so the build is green
-  without `prisma generate`. Production runs `prisma generate` + `prisma db push`
-  (in the backend Dockerfile / `prisma:*` scripts). Default store is the file store.
+- **Persistence is the file store; Postgres/Prisma is dormant.** V1 deploys with
+  `FileSpecStore` (JSON under `PROCESSFOX_DATA_DIR`, on a volume). `prismaStore.ts` +
+  `prisma/schema.prisma` remain in the repo but are NOT wired into the build (no prisma
+  dep, no `prisma generate`). `createStore()` would switch to Prisma if `DATABASE_URL`
+  is set — re-adding it means restoring the prisma deps + a generate step. `prismaStore.ts`
+  loads `@prisma/client` via a non-literal dynamic import, so the build stays green without it.
 - **Export is one file.** The standalone player is built with
   `inlineDynamicImports` so `vite-plugin-singlefile` can inline everything; the
   exported app therefore bundles all module code (self-contained by design).
