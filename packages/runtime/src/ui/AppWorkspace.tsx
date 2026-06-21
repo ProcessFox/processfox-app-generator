@@ -105,7 +105,7 @@ export function AppWorkspace({
         </div>
       </div>
 
-      <div className="grid flex-1 grid-cols-1 gap-4 overflow-hidden p-4 lg:grid-cols-[340px_1fr_340px]">
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-hidden p-4 lg:grid-cols-[340px_1fr_340px] lg:grid-rows-1">
         <ChatPanel
           messages={messages}
           liveEvents={liveEvents}
@@ -114,12 +114,12 @@ export function AppWorkspace({
           onSend={send}
         />
 
-        <main className="overflow-y-auto rounded-panel border border-line-subtle bg-panel p-5">
+        <main className="min-h-0 overflow-y-auto rounded-panel border border-line-subtle bg-panel p-5">
           <h2 className="mb-4 text-sm font-ui text-fg">Vorschau</h2>
           <Player manifest={manifest} />
         </main>
 
-        <div className="space-y-4 overflow-y-auto">
+        <div className="min-h-0 space-y-4 overflow-y-auto">
           <ThemeEditor
             theme={theme}
             onChange={(t) => setManifest((m) => ({ ...m, theme: t }))}

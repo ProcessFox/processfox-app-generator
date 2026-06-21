@@ -41,7 +41,7 @@ export function ChatPanel({
   }
 
   return (
-    <aside className="flex h-full flex-col rounded-panel border border-line-subtle bg-panel">
+    <aside className="flex h-full min-h-0 flex-col rounded-panel border border-line-subtle bg-panel">
       <header className="border-b border-line-subtle px-4 py-3">
         <h2 className="text-sm font-ui text-fg">App anpassen</h2>
         <p className="text-xs text-fg-tertiary">
@@ -49,7 +49,7 @@ export function ChatPanel({
         </p>
       </header>
 
-      <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4">
         {messages.map((m, i) =>
           m.role === 'user' ? (
             <div key={i} className="ml-auto max-w-[85%] rounded-card bg-accent px-3 py-2 text-sm text-white">
