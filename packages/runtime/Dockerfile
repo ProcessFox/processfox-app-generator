@@ -13,9 +13,10 @@ COPY package.json package-lock.json ./
 COPY packages/core/package.json packages/core/package.json
 COPY packages/runtime/package.json packages/runtime/package.json
 COPY packages/agent/package.json packages/agent/package.json
-# `npm install` (not ci): re-resolves platform-specific native optional deps
-# (tailwind oxide, lightningcss, rollup). --include=dev keeps the build tooling.
-RUN npm install --include=dev --no-audit --no-fund
+# Remove the (macOS-generated) lockfile first: it omits Linux native optional deps
+# (@rollup/rollup-linux-x64-gnu, lightningcss, esbuild, tailwind-oxide) due to
+# npm/cli#4828. A fresh install on this platform resolves them correctly.
+RUN rm -f package-lock.json && npm install --include=dev --no-audit --no-fund
 COPY . .
 # build:app = SPA (no tsc — that's a CI step). build:player = single-file export
 # template. Sequential, so peak memory is one Vite build at a time.

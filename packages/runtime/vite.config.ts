@@ -4,12 +4,6 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  build: {
-    // Skip minify: esbuild's native minifier spikes memory/can fail on the large
-    // xlsx bundle in constrained container builds. nginx serves gzip anyway, so
-    // the transfer size stays small. (Code-splitting/lazy chunks are unaffected.)
-    minify: false,
-  },
   server: {
     // Forward generator API calls to the agent backend during development.
     proxy: {

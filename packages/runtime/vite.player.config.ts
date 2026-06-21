@@ -14,9 +14,6 @@ export default defineConfig({
   build: {
     outDir: 'dist-player',
     emptyOutDir: true,
-    // The export is a local-use single file — skip minify to cut build memory
-    // (helps when the frontend + backend images build in parallel).
-    minify: false,
     rollupOptions: {
       input: 'player.html',
       // The standalone export must be ONE file: merge lazy chunks into the entry

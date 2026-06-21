@@ -13,9 +13,11 @@ COPY package.json package-lock.json ./
 COPY packages/core/package.json packages/core/package.json
 COPY packages/runtime/package.json packages/runtime/package.json
 COPY packages/agent/package.json packages/agent/package.json
-# `npm install` (not ci): re-resolves platform-specific native optional deps for
-# the build platform. --include=dev keeps tsx/prisma even if NODE_ENV=production.
-RUN npm install --include=dev --no-audit --no-fund
+# Remove the (macOS-generated) lockfile first: it omits Linux native optional deps
+# (@rollup/rollup-linux-x64-gnu, lightningcss, esbuild, tailwind-oxide) due to
+# npm/cli#4828. A fresh install on this platform resolves them correctly.
+# --include=dev keeps tsx/prisma even if NODE_ENV=production.
+RUN rm -f package-lock.json && npm install --include=dev --no-audit --no-fund
 COPY . .
 # Generate the Prisma client (Postgres store).
 RUN npx prisma generate --schema packages/agent/prisma/schema.prisma
