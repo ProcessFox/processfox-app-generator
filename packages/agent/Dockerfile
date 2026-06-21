@@ -19,8 +19,11 @@ COPY packages/agent/package.json packages/agent/package.json
 # --include=dev keeps tsx/prisma even if NODE_ENV=production.
 RUN rm -f package-lock.json && npm install --include=dev --no-audit --no-fund
 COPY . .
-# Generate the Prisma client (Postgres store).
-RUN npx prisma generate --schema packages/agent/prisma/schema.prisma
+# Generate the Prisma client (Postgres store). `generate` doesn't connect to the
+# DB, but Prisma 7 validates that env("DATABASE_URL") resolves — supply a dummy
+# value just for this step; the real URL is injected at runtime by compose.
+RUN DATABASE_URL="postgresql://user:pass@localhost:5432/db" \
+  npx prisma generate --schema packages/agent/prisma/schema.prisma
 
 FROM node:22-slim
 WORKDIR /app
