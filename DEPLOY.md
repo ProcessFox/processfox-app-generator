@@ -4,8 +4,11 @@ ProcessFox ships as two containers, definiert in [`docker-compose.yml`](docker-c
 
 | Service | Inhalt | Port |
 |---|---|---|
-| `frontend` | Generator-SPA (statisch via nginx, proxyt `/api` → backend) | 80 (→ 8080 lokal) |
-| `backend` | Agent + Persistenz (Fastify, File-Store auf Volume) | 8787 |
+| `frontend` | Generator-SPA (statisch via nginx, proxyt `/api` → backend) | 80 (Coolify-Proxy/Domain) |
+| `backend` | Agent + Persistenz (Fastify, File-Store auf Volume) | 8787 (intern) |
+
+Das Frontend veröffentlicht **keinen Host-Port** — Coolifys Reverse-Proxy routet die Domain
+auf Container-Port 80. (Sonst kollidiert `8080` auf dem Host.)
 
 Der **API-Key bleibt im Backend** — die SPA spricht das Backend nur über den nginx-Proxy an.
 
@@ -74,6 +77,17 @@ also nur:
 ```bash
 cp .env.example .env       # Werte eintragen
 docker compose pull && docker compose up
+```
+
+Hinweis: Das Frontend hat (für Coolify) **kein** Host-Port-Mapping. Für lokalen
+Direktzugriff einen Port veröffentlichen, z. B. per Override:
+
+```bash
+docker compose -f docker-compose.yml -f - up <<'YAML'
+services:
+  frontend:
+    ports: ['8080:80']
+YAML
 # Frontend: http://localhost:8080
 ```
 

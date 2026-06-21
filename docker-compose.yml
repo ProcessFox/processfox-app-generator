@@ -33,8 +33,10 @@ services:
     image: ${FRONTEND_IMAGE:-ghcr.io/processfox/processfox-frontend:latest}
     pull_policy: always
     restart: unless-stopped
-    ports:
-      - '8080:80'
+    # No host port publishing: Coolify's reverse proxy (Traefik) routes the
+    # domain to this container's port 80. Publishing 8080 conflicts on the host.
+    expose:
+      - '80'
     depends_on:
       backend:
         condition: service_healthy
