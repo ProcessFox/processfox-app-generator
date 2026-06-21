@@ -81,9 +81,11 @@ export function AppWorkspace({
   }
 
   return (
-    <div className="flex h-[calc(100vh-65px)] flex-col">
+    <div className="flex h-screen flex-col">
       <div className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-3">
+        <h1 className="text-lg font-bold text-slate-900">{manifest.name}</h1>
         <div className="flex items-center gap-3">
+          {saveStatus && <span className="text-sm text-emerald-700">{saveStatus}</span>}
           <button
             type="button"
             onClick={onBack}
@@ -91,10 +93,6 @@ export function AppWorkspace({
           >
             ← Neue App
           </button>
-          <h2 className="font-semibold text-slate-800">{manifest.name}</h2>
-        </div>
-        <div className="flex items-center gap-3">
-          {saveStatus && <span className="text-sm text-emerald-700">{saveStatus}</span>}
           <button
             type="button"
             onClick={save}

@@ -13,18 +13,11 @@ export default function App() {
   // workspace sub-page instead of the landing prompt.
   const [generated, setGenerated] = useState<GeneratedApp | null>(null);
 
-  // The workspace is a full-width sub-page; landing/demo live in the centered shell.
+  // The workspace is a full-width sub-page with its own navbar (app title left,
+  // no Generator/Demo switch); landing/demo live in the centered shell.
   if (generated) {
     return (
       <div className="min-h-screen bg-slate-100 text-slate-900">
-        <Header
-          tab="generator"
-          onTab={(t) => {
-            setTab(t);
-            setGenerated(null);
-          }}
-          onHome={() => setGenerated(null)}
-        />
         <AppWorkspace
           initialManifest={generated.manifest}
           conversationId={generated.conversationId}
