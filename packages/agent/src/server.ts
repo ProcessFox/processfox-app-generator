@@ -1,10 +1,8 @@
-import { readFile } from 'node:fs/promises';
 import Fastify from 'fastify';
 import {
   ModuleRegistry,
   builtinModules,
   validateManifest,
-  injectManifest,
   type AppManifest,
 } from '@processfox/core';
 import { runAgent, type ModelCaller } from './loop.js';
@@ -98,33 +96,9 @@ export function buildServer(options: ServerOptions = {}) {
     },
   );
 
-  // Export one version as a standalone single-file HTML app (file://-openable).
-  app.get<{ Params: { id: string; v: string } }>(
-    '/api/apps/:id/versions/:v/export',
-    async (request, reply) => {
-      const manifest = await store.getVersion(request.params.id, Number(request.params.v));
-      if (!manifest) return reply.code(404).send({ error: 'Version not found' });
-
-      const templatePath = process.env.PROCESSFOX_PLAYER_TEMPLATE;
-      if (!templatePath) {
-        return reply
-          .code(503)
-          .send({ error: 'Export template not configured (PROCESSFOX_PLAYER_TEMPLATE)' });
-      }
-      let template: string;
-      try {
-        template = await readFile(templatePath, 'utf8');
-      } catch {
-        return reply.code(503).send({ error: 'Export template file not found' });
-      }
-
-      const safeName = (manifest.name || 'app').replace(/[^\w.-]+/g, '_').slice(0, 60);
-      return reply
-        .header('content-type', 'text/html; charset=utf-8')
-        .header('content-disposition', `attachment; filename="${safeName}.html"`)
-        .send(injectManifest(template, manifest));
-    },
-  );
+  // Note: app export is done client-side in the browser (the frontend serves the
+  // single-file player at /player.html; the SPA injects the manifest and downloads
+  // it). The backend therefore needs no Vite build and no template file.
 
   return app;
 }

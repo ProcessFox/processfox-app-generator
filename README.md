@@ -66,14 +66,10 @@ packages/
 ```bash
 npm install
 
-# Player-Vorlage einmalig bauen (für den Export-Endpoint)
-npm run build:player -w @processfox/runtime
+# Backend (Generierung braucht ANTHROPIC_API_KEY; Persistenz auch ohne)
+ANTHROPIC_API_KEY=sk-... npm run start -w @processfox/agent       # :8787
 
-# Backend (Generierung braucht ANTHROPIC_API_KEY; Persistenz/Export auch ohne)
-PROCESSFOX_PLAYER_TEMPLATE=packages/runtime/dist-player/player.html \
-  ANTHROPIC_API_KEY=sk-... npm run start -w @processfox/agent     # :8787
-
-# Frontend (proxyt /api → :8787)
+# Frontend (proxyt /api → :8787; serviert /player.html für den Export)
 npm run dev -w @processfox/runtime                                # :5173
 ```
 
@@ -98,7 +94,10 @@ npm run typecheck  # tsc --noEmit, strict, über alle Pakete
 | `POST` | `/api/apps` | App speichern (Version 1) |
 | `POST` | `/api/apps/:id/versions` | neue, immutable Version |
 | `GET`  | `/api/apps` · `/api/apps/:id` · `/api/apps/:id/versions/:v` | lesen |
-| `GET`  | `/api/apps/:id/versions/:v/export` | Single-File-HTML-Export |
+
+Der **Single-File-Export läuft clientseitig**: Das Frontend serviert die Player-Vorlage
+unter `/player.html`; der Browser holt sie, spritzt das Manifest ein und lädt die
+fertige, eigenständige HTML-Datei herunter — ohne Backend.
 
 ## Deployment
 

@@ -30,10 +30,11 @@ Der **API-Key bleibt im Backend** — die SPA spricht das Backend nur über den 
 
 ## App-Export
 
-Der Export-Endpoint (`GET /api/apps/:id/versions/:v/export`) erzeugt eine **einzelne,
-eigenständige HTML-Datei** (alles inline), die der Sachbearbeiter lokal per Doppelklick
-öffnet — kein Server. Das Backend liest dafür die einmal gebaute Player-Vorlage
-(`PROCESSFOX_PLAYER_TEMPLATE`, im Image gesetzt).
+Der Export erzeugt eine **einzelne, eigenständige HTML-Datei** (alles inline), die der
+Sachbearbeiter lokal per Doppelklick öffnet — kein Server. Er läuft **clientseitig im
+Browser**: Das **Frontend** baut die Single-File-Player-Vorlage und serviert sie unter
+`/player.html`; die SPA holt sie, spritzt das Manifest ein und lädt die Datei herunter.
+Nur das Frontend-Image führt einen Vite-Build aus — das Backend braucht dafür nichts.
 
 ## Lokal mit Docker
 
@@ -46,10 +47,12 @@ docker compose up --build
 ## Ohne Docker (Entwicklung)
 
 ```bash
-# Backend (Export + Persistenz; Key optional, sonst kein /api/generate)
-PROCESSFOX_PLAYER_TEMPLATE=packages/runtime/dist-player/player.html \
-  ANTHROPIC_API_KEY=sk-... npm run start -w @processfox/agent
+# Backend (Persistenz; Key optional, sonst kein /api/generate)
+ANTHROPIC_API_KEY=sk-... npm run start -w @processfox/agent
 
-npm run build:player -w @processfox/runtime   # einmalig: Player-Vorlage bauen
 npm run dev -w @processfox/runtime            # Frontend (proxyt /api → :8787)
 ```
+
+Im Dev-Modus serviert Vite `/player.html` (nicht-inline) — der Export-Button funktioniert,
+die Datei ist dort aber nicht self-contained. Self-contained ist sie aus dem
+Produktions-Frontend (nginx serviert die gebaute Single-File-Vorlage).
