@@ -17,10 +17,11 @@ export interface ThemeTokens {
 }
 
 export const DEFAULT_THEME: ThemeTokens = {
-  accent: '#ea580c',
-  accentHover: '#c2410c',
+  // Linear Indigo — the single interactive accent (see LINEAR design system).
+  accent: '#5e6ad2',
+  accentHover: '#4b57c8',
   accentForeground: '#ffffff',
-  radius: '0.5rem',
+  radius: '6px',
 };
 
 /**

@@ -4,6 +4,7 @@ import { type AppManifest } from '@processfox/core';
 import { StandalonePlayer } from './StandalonePlayer.js';
 import { MANIFEST_PLACEHOLDER } from '../export/bundle.js';
 import { referenceManifest } from '../manifest/reference.js';
+import '../fonts.css';
 import '../index.css';
 
 /**

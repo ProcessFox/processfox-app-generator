@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { type AppManifest } from '@processfox/core';
 import { streamGenerate, type StreamEvent } from '../lib/agentStream.js';
 import { ThinkingStream } from './ThinkingStream.js';
+import { Button, Card, TextArea } from './primitives.js';
 import type { ChatMessage } from './ChatPanel.js';
 
 export interface GeneratedApp {
@@ -60,33 +61,28 @@ export function GeneratorLanding({ onGenerated }: { onGenerated: (app: Generated
 
   return (
     <div className="space-y-6">
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
-        <label className="block text-sm font-medium text-slate-700">
+      <Card className="p-6">
+        <label className="block text-sm font-ui text-fg-secondary">
           Beschreibe die gewünschte App
         </label>
-        <textarea
+        <TextArea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           rows={3}
           disabled={busy}
-          className="mt-2 w-full rounded-lg border border-slate-300 p-3 text-sm focus:border-orange-500 focus:outline-none disabled:opacity-60"
+          className="mt-2"
         />
         <div className="mt-3">
-          <button
-            type="button"
-            onClick={generate}
-            disabled={busy || prompt.trim().length === 0}
-            className="rounded-lg bg-orange-600 px-5 py-2.5 font-medium text-white hover:bg-orange-700 disabled:opacity-50"
-          >
+          <Button onClick={generate} disabled={busy || prompt.trim().length === 0}>
             {busy ? 'Agent arbeitet…' : 'App generieren'}
-          </button>
+          </Button>
         </div>
         {error && (
-          <p className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          <p className="mt-3 rounded-comfortable border border-error/30 bg-error/10 p-3 text-sm text-error">
             {error}
           </p>
         )}
-      </section>
+      </Card>
 
       {(busy || events.length > 0) && <ThinkingStream events={events} active={busy} />}
     </div>

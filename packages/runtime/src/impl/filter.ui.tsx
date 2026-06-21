@@ -14,7 +14,7 @@ export function FilterUi({ node }: NodeUiProps) {
   const sortDir = (node.config.sortDir as string) ?? 'asc';
 
   return (
-    <div className="space-y-1 text-sm text-slate-600">
+    <div className="space-y-1 text-sm text-fg-secondary">
       {where ? (
         <p>
           Filter:{' '}
@@ -33,7 +33,7 @@ export function FilterUi({ node }: NodeUiProps) {
           </span>
         </p>
       )}
-      <p className="text-xs text-slate-400">Kernmechanik gesperrt</p>
+      <p className="text-xs text-fg-quaternary">Kernmechanik gesperrt</p>
     </div>
   );
 }

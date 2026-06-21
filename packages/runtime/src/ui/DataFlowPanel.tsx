@@ -24,9 +24,9 @@ export function DataFlowPanel({
   const order = topologicalOrder(manifest);
 
   return (
-    <aside className="rounded-xl border border-slate-200 bg-white p-5">
-      <h2 className="text-sm font-semibold text-slate-800">Datenfluss & Datenschutz</h2>
-      <p className="mt-1 text-xs text-slate-500">
+    <aside className="rounded-panel border border-line-subtle bg-panel p-5">
+      <h2 className="text-sm font-ui text-fg">Datenfluss & Datenschutz</h2>
+      <p className="mt-1 text-xs text-fg-tertiary">
         So und nur so werden deine Daten verarbeitet.
       </p>
 
@@ -36,15 +36,15 @@ export function DataFlowPanel({
           const def = registry.getOrThrow(node.moduleId);
           return (
             <li key={instanceId} className="relative">
-              {index > 0 && <div className="mx-auto h-3 w-px bg-slate-300" />}
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+              {index > 0 && <div className="mx-auto h-3 w-px bg-line-standard" />}
+              <div className="rounded-card border border-line-subtle bg-level3 p-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-800">{def.title}</span>
-                  <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-600">
+                  <span className="text-sm font-ui text-fg">{def.title}</span>
+                  <span className="rounded-full bg-surface px-2 py-0.5 text-[10px] font-ui uppercase tracking-wide text-fg-tertiary">
                     {CATEGORY_LABEL[def.category] ?? def.category}
                   </span>
                 </div>
-                <div className="mt-1 text-xs text-slate-500">
+                <div className="mt-1 text-xs text-fg-tertiary">
                   {def.inputs.length > 0 && (
                     <span>← {def.inputs.map((p) => p.type).join(', ')} </span>
                   )}
@@ -52,7 +52,7 @@ export function DataFlowPanel({
                     <span>→ {def.outputs.map((p) => p.type).join(', ')}</span>
                   )}
                 </div>
-                <p className="mt-1.5 text-[11px] text-emerald-700">🔒 läuft lokal im Browser</p>
+                <p className="mt-1.5 text-[11px] text-success">🔒 läuft lokal im Browser</p>
               </div>
             </li>
           );

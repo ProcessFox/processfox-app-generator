@@ -1,1 +1,270 @@
 @import 'tailwindcss';
+
+/* =====================================================================
+   ProcessFox design tokens — Linear-derived system.
+
+   Two layers:
+   1. Theme-switching COLORS live in :root (light default) and
+      [data-theme="dark"]. They are mapped to Tailwind utilities via the
+      `@theme inline` block at the bottom so a theme switch updates every
+      utility live, with no rebuild.
+   2. Non-switching tokens (fonts, radius, shadow, easing, type scale) are
+      identical in both themes, so they go straight into `@theme` — Tailwind
+      emits them as :root vars AND generates utilities in one step.
+   ===================================================================== */
+
+:root {
+  /* === BACKGROUNDS (light default) === */
+  --color-bg-marketing: #f7f8f8;
+  --color-bg-panel: #ffffff;
+  --color-bg-level3: #f0f1f2;
+  --color-bg-secondary: #e8e9eb;
+
+  /* === TEXT === */
+  --color-text-primary: #08090a;
+  --color-text-secondary: #2c2e33;
+  --color-text-tertiary: #5a5f6b;
+  --color-text-quaternary: #8a8f98; /* decorative / disabled / placeholder only */
+
+  /* === ACCENT (Indigo — the single interactive signal) ===
+     Prefix-free names so they never collide with the Tailwind --color-* tokens
+     defined in @theme inline below. */
+  --accent-primary: #5e6ad2;
+  --accent-hover: #4b57c8;
+  --accent-light: #7b89f0;
+
+  /* === STATUS (data states only; identical across themes) === */
+  --color-status-success: #27a644;
+  --color-status-complete: #10b981;
+  --color-status-warning: #f59e0b;
+  --color-status-error: #e53935;
+
+  /* === BORDERS (transparent overlays — opacity encodes hierarchy) === */
+  --color-border-micro: rgba(0, 0, 0, 0.03);
+  --color-border-subtle: rgba(0, 0, 0, 0.06);
+  --color-border-standard: rgba(0, 0, 0, 0.1);
+
+  /* === OVERLAY / INSET === */
+  --color-inset-light: rgba(0, 0, 0, 0.03);
+  --color-inset-deep: rgba(0, 0, 0, 0.4);
+  --color-overlay: rgba(0, 0, 0, 0.5);
+
+  /* === Typography knobs not expressible as Tailwind tokens === */
+  --font-features: 'cv01', 'ss03'; /* the non-negotiable pair — applied globally */
+  --font-weight-reading: 400;
+  --font-weight-ui: 510; /* THE SIGNATURE — between regular and semibold */
+  --font-weight-strong: 590;
+
+  /* === SPACING (4px base — mirrors Tailwind's default scale) === */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* === MOTION durations (used inline; Tailwind has no duration token) === */
+  --duration-micro: 100ms;
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-moderate: 300ms;
+  --duration-slow: 500ms;
+
+  /* === Z-INDEX === */
+  --z-base: 0;
+  --z-raised: 1;
+  --z-dropdown: 10;
+  --z-sticky: 50;
+  --z-overlay: 60;
+  --z-modal: 70;
+  --z-popover: 80;
+  --z-toast: 90;
+  --z-top: 100;
+}
+
+/* === DARK THEME (opt-in) — only the switching colors change === */
+[data-theme='dark'] {
+  --color-bg-marketing: #08090a;
+  --color-bg-panel: #0f1011;
+  --color-bg-level3: #191a1b;
+  --color-bg-secondary: #1f2023;
+
+  --color-text-primary: #f7f8f8;
+  --color-text-secondary: #d0d6e0;
+  --color-text-tertiary: #8a8f98;
+  --color-text-quaternary: #62666d;
+
+  --accent-hover: #828fff;
+  --accent-light: #a8b1ff;
+
+  --color-border-micro: rgba(255, 255, 255, 0.02);
+  --color-border-subtle: rgba(255, 255, 255, 0.05);
+  --color-border-standard: rgba(255, 255, 255, 0.08);
+}
+
+/* =====================================================================
+   Non-switching design tokens. Tailwind reads these to generate utilities
+   (font-body, rounded-card, shadow-popover, ease-default, text-display-xl…)
+   and also emits them as :root custom properties for direct var() use.
+   ===================================================================== */
+@theme {
+  /* Fonts → font-display, font-body, font-mono */
+  --font-display: 'Inter Variable', 'SF Pro Display', system-ui, 'Segoe UI', Helvetica, Arial,
+    sans-serif;
+  --font-body: 'Inter Variable', 'SF Pro Display', system-ui, 'Segoe UI', Helvetica, Arial,
+    sans-serif;
+  --font-mono: 'Berkeley Mono', 'SF Mono', Consolas, Monaco, monospace;
+
+  /* Radius → rounded-comfortable, rounded-card, rounded-panel, … */
+  --radius-micro: 2px;
+  --radius-standard: 4px;
+  --radius-comfortable: 6px; /* buttons, inputs */
+  --radius-card: 8px; /* cards, dropdowns, toasts */
+  --radius-panel: 12px; /* panels, modals, feature cards */
+  --radius-large: 22px;
+
+  /* Shadows → shadow-popover, shadow-modal, shadow-focus, shadow-inset.
+     Floating elements only; everyday elevation uses luminance, not shadow.
+     The 1px inset border tracks the live --color-border-standard token. */
+  --shadow-popover: rgba(0, 0, 0, 0.15) 0 4px 12px, rgba(0, 0, 0, 0.2) 0 8px 24px,
+    inset 0 0 0 1px var(--color-border-standard);
+  --shadow-modal: rgba(0, 0, 0, 0.2) 0 16px 48px, rgba(0, 0, 0, 0.3) 0 32px 72px,
+    inset 0 0 0 1px var(--color-border-standard);
+  --shadow-inset: inset 0 0 0 1px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-focus: 0 0 0 2px rgba(94, 106, 210, 0.4), 0 0 0 4px rgba(94, 106, 210, 0.2);
+
+  /* Easing → ease-default, ease-enter, ease-material, ease-in */
+  --ease-default: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* easeOutQuad — primary */
+  --ease-enter: cubic-bezier(0.165, 0.84, 0.44, 1); /* easeOutQuart — entrances */
+  --ease-material: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+  /* Type scale → text-display-xl, text-heading-lg, text-body-emphasis, … */
+  --text-display-xl: clamp(40px, 5.5vw, 72px);
+  --text-display-xl--line-height: 1;
+  --text-display-xl--letter-spacing: -1.584px;
+  --text-display-xl--font-weight: 590;
+
+  --text-display-lg: clamp(36px, 5vw, 64px);
+  --text-display-lg--line-height: 1;
+  --text-display-lg--letter-spacing: -1.408px;
+  --text-display-lg--font-weight: 590;
+
+  --text-display-md: clamp(28px, 3.75vw, 48px);
+  --text-display-md--line-height: 1;
+  --text-display-md--letter-spacing: -1.056px;
+  --text-display-md--font-weight: 510;
+
+  --text-heading-lg: clamp(24px, 2.5vw, 32px);
+  --text-heading-lg--line-height: 1.1;
+  --text-heading-lg--letter-spacing: -0.704px;
+  --text-heading-lg--font-weight: 510;
+
+  --text-heading-md: clamp(20px, 2vw, 24px);
+  --text-heading-md--line-height: 1.2;
+  --text-heading-md--letter-spacing: -0.48px;
+  --text-heading-md--font-weight: 510;
+
+  --text-heading-sm: clamp(18px, 1.6vw, 20px);
+  --text-heading-sm--line-height: 1.3;
+  --text-heading-sm--letter-spacing: -0.24px;
+  --text-heading-sm--font-weight: 510;
+
+  --text-body-emphasis: 16px;
+  --text-body-emphasis--line-height: 1.5;
+  --text-body-emphasis--letter-spacing: -0.165px;
+  --text-body-emphasis--font-weight: 510;
+}
+
+/* =====================================================================
+   Switching colors → Tailwind utilities. `inline` makes utilities reference
+   the live semantic vars (var(--color-bg-panel) …) instead of a frozen copy,
+   so [data-theme] toggles propagate without a rebuild.
+   ===================================================================== */
+@theme inline {
+  /* bg-canvas / bg-panel / bg-level3 / bg-surface (and text-/border- forms) */
+  --color-canvas: var(--color-bg-marketing);
+  --color-panel: var(--color-bg-panel);
+  --color-level3: var(--color-bg-level3);
+  --color-surface: var(--color-bg-secondary);
+
+  /* text-fg / text-fg-secondary / text-fg-tertiary / text-fg-quaternary */
+  --color-fg: var(--color-text-primary);
+  --color-fg-secondary: var(--color-text-secondary);
+  --color-fg-tertiary: var(--color-text-tertiary);
+  --color-fg-quaternary: var(--color-text-quaternary);
+
+  /* bg-accent / hover:bg-accent-hover / text-accent-light */
+  --color-accent: var(--accent-primary);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-light: var(--accent-light);
+
+  /* status: bg-success / text-error / … */
+  --color-success: var(--color-status-success);
+  --color-complete: var(--color-status-complete);
+  --color-warning: var(--color-status-warning);
+  --color-error: var(--color-status-error);
+
+  /* borders as colors → border-line-micro / border-line-subtle / border-line-standard */
+  --color-line-micro: var(--color-border-micro);
+  --color-line-subtle: var(--color-border-subtle);
+  --color-line-standard: var(--color-border-standard);
+}
+
+/* =====================================================================
+   Global base. cv01 + ss03 inherit to every element; never override away.
+   ===================================================================== */
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-feature-settings: var(--font-features);
+  font-variation-settings: 'wght' var(--font-weight-reading);
+  color: var(--color-text-primary);
+  background: var(--color-bg-marketing);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--font-mono);
+  font-feature-settings: var(--font-features);
+}
+
+/* Weight-510 signature + strong emphasis as inheritable utilities.
+   Use these instead of font-weight:500/600 — 510 needs Inter Variable. */
+@utility font-ui {
+  font-variation-settings: 'wght' var(--font-weight-ui);
+}
+
+@utility font-strong {
+  font-variation-settings: 'wght' var(--font-weight-strong);
+}
+
+/* Multi-layer indigo focus ring — single-layer rings look thin on dark. */
+@utility focus-ring {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* =====================================================================
+   Reduced motion — respect the user's preference.
+   ===================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

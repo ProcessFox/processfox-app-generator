@@ -22,10 +22,10 @@ export function ThinkingStream({
   if (items.length === 0 && !active) return null;
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-      <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+    <div className="rounded-card border border-line-subtle bg-level3 p-3">
+      <div className="flex items-center gap-2 text-xs font-ui text-fg-tertiary">
         {active && (
-          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-orange-500" />
+          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-accent" />
         )}
         <span>{active ? 'Agent denkt nach…' : 'Vorgehen'}</span>
       </div>
@@ -34,14 +34,14 @@ export function ThinkingStream({
           <li key={i} className="flex items-start gap-2 text-sm">
             {e.type === 'tool' && (
               <>
-                <span className="mt-0.5 text-slate-400">→</span>
-                <span className="text-slate-700">{e.label}</span>
+                <span className="mt-0.5 text-fg-quaternary">→</span>
+                <span className="text-fg-secondary">{e.label}</span>
               </>
             )}
             {e.type === 'validation' && (
               <>
                 <span className="mt-0.5">{e.valid ? '✓' : '✗'}</span>
-                <span className={e.valid ? 'text-emerald-700' : 'text-amber-700'}>
+                <span className={e.valid ? 'text-success' : 'text-warning'}>
                   {e.valid
                     ? 'App-Entwurf ist gültig'
                     : `Entwurf wird korrigiert (${e.errors.length} Hinweis${e.errors.length === 1 ? '' : 'e'})`}
@@ -50,8 +50,8 @@ export function ThinkingStream({
             )}
             {e.type === 'text' && (
               <>
-                <span className="mt-0.5 text-slate-400">💬</span>
-                <span className="italic text-slate-600">{e.text}</span>
+                <span className="mt-0.5 text-fg-quaternary">💬</span>
+                <span className="italic text-fg-tertiary">{e.text}</span>
               </>
             )}
           </li>

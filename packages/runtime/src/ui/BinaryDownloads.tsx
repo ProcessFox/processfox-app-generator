@@ -5,11 +5,11 @@ import type { BinaryValue } from '../engine/data.js';
 export function BinaryDownloads({ result, mime }: { result?: Record<string, unknown>; mime: string }) {
   const document = result?.document as BinaryValue | undefined;
   if (!document || document.files.length === 0) {
-    return <p className="text-sm text-slate-500">Datei(en) werden beim Ausführen erzeugt.</p>;
+    return <p className="text-sm text-fg-tertiary">Datei(en) werden beim Ausführen erzeugt.</p>;
   }
   return (
     <div className="space-y-1">
-      <p className="text-sm font-medium text-slate-700">{document.files.length} Datei(en) erzeugt:</p>
+      <p className="text-sm font-ui text-fg-secondary">{document.files.length} Datei(en) erzeugt:</p>
       <ul className="space-y-1">
         {document.files.map((file, i) => (
           <li key={i}>

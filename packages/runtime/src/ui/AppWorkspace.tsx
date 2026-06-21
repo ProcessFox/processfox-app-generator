@@ -4,6 +4,8 @@ import { Player } from './Player.js';
 import { DataFlowPanel } from './DataFlowPanel.js';
 import { ThemeEditor } from './ThemeEditor.js';
 import { ChatPanel, type ChatMessage } from './ChatPanel.js';
+import { Button, ThemeToggle } from './primitives.js';
+import type { ThemeMode } from './useThemeMode.js';
 import { useAppActions } from './useAppActions.js';
 import { streamGenerate, type StreamEvent } from '../lib/agentStream.js';
 
@@ -23,11 +25,15 @@ export function AppWorkspace({
   conversationId,
   initialMessages,
   onBack,
+  themeMode,
+  onToggleTheme,
 }: {
   initialManifest: AppManifest;
   conversationId: string;
   initialMessages: ChatMessage[];
   onBack: () => void;
+  themeMode: ThemeMode;
+  onToggleTheme: () => void;
 }) {
   const registry = useMemo(() => new ModuleRegistry(builtinModules), []);
   const [manifest, setManifest] = useState<AppManifest>(initialManifest);
@@ -82,33 +88,20 @@ export function AppWorkspace({
 
   return (
     <div className="flex h-screen flex-col">
-      <div className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-3">
-        <h1 className="text-lg font-bold text-slate-900">{manifest.name}</h1>
+      <div className="flex items-center justify-between border-b border-line-standard bg-panel px-6 py-3">
+        <h1 className="text-lg font-strong text-fg">{manifest.name}</h1>
         <div className="flex items-center gap-3">
-          {saveStatus && <span className="text-sm text-emerald-700">{saveStatus}</span>}
-          <button
-            type="button"
-            onClick={onBack}
-            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50"
-          >
+          {saveStatus && <span className="text-sm text-success">{saveStatus}</span>}
+          <ThemeToggle mode={themeMode} onToggle={onToggleTheme} />
+          <Button variant="ghost" className="px-3 py-1.5" onClick={onBack}>
             ← Neue App
-          </button>
-          <button
-            type="button"
-            onClick={save}
-            disabled={saving}
-            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-          >
+          </Button>
+          <Button variant="subtle" className="px-3 py-1.5" onClick={save} disabled={saving}>
             {saving ? 'Speichern…' : 'Version speichern'}
-          </button>
-          <button
-            type="button"
-            onClick={downloadStandalone}
-            disabled={exporting}
-            className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
-          >
+          </Button>
+          <Button className="px-3 py-1.5" onClick={downloadStandalone} disabled={exporting}>
             {exporting ? 'Export…' : '↓ HTML-App'}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -121,8 +114,8 @@ export function AppWorkspace({
           onSend={send}
         />
 
-        <main className="overflow-y-auto rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="mb-4 text-sm font-semibold text-slate-800">Vorschau</h2>
+        <main className="overflow-y-auto rounded-panel border border-line-subtle bg-panel p-5">
+          <h2 className="mb-4 text-sm font-ui text-fg">Vorschau</h2>
           <Player manifest={manifest} />
         </main>
 
@@ -134,7 +127,7 @@ export function AppWorkspace({
             saving={saving}
             saveStatus={saveStatus}
           />
-          {exportError && <p className="text-sm text-red-700">{exportError}</p>}
+          {exportError && <p className="text-sm text-error">{exportError}</p>}
           <DataFlowPanel manifest={manifest} registry={registry} />
         </div>
       </div>

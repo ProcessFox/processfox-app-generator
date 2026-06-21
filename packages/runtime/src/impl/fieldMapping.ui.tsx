@@ -6,15 +6,15 @@ export function FieldMappingUi({ node }: NodeUiProps) {
 
   return (
     <div className="space-y-2">
-      <p className="text-sm text-slate-600">
+      <p className="text-sm text-fg-secondary">
         Spalten werden automatisch umbenannt (Kernmechanik gesperrt):
       </p>
       <ul className="space-y-1 text-sm">
         {entries.map(([source, target]) => (
           <li key={source} className="flex items-center gap-2 font-mono text-xs">
-            <span className="rounded bg-slate-100 px-1.5 py-0.5">{source}</span>
-            <span className="text-slate-400">→</span>
-            <span className="rounded bg-[var(--pf-accent)] px-1.5 py-0.5 text-[var(--pf-accent-fg)]">
+            <span className="rounded-standard bg-surface px-1.5 py-0.5 text-fg-secondary">{source}</span>
+            <span className="text-fg-quaternary">→</span>
+            <span className="rounded-standard bg-[var(--pf-accent)] px-1.5 py-0.5 text-[var(--pf-accent-fg)]">
               {target}
             </span>
           </li>

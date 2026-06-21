@@ -1,6 +1,8 @@
 import { DEFAULT_THEME, type ThemeTokens } from '@processfox/core';
+import { Button } from './primitives.js';
 
 const PRESETS: Array<{ name: string; theme: Partial<ThemeTokens> }> = [
+  { name: 'Indigo', theme: { accent: '#5e6ad2', accentHover: '#4b57c8', accentForeground: '#ffffff' } },
   { name: 'Orange', theme: { accent: '#ea580c', accentHover: '#c2410c', accentForeground: '#ffffff' } },
   { name: 'Blau', theme: { accent: '#2563eb', accentHover: '#1d4ed8', accentForeground: '#ffffff' } },
   { name: 'Grün', theme: { accent: '#16a34a', accentHover: '#15803d', accentForeground: '#ffffff' } },
@@ -9,9 +11,9 @@ const PRESETS: Array<{ name: string; theme: Partial<ThemeTokens> }> = [
 ];
 
 const RADII: Array<{ label: string; value: string }> = [
-  { label: 'Eckig', value: '0.125rem' },
-  { label: 'Standard', value: '0.5rem' },
-  { label: 'Rund', value: '1rem' },
+  { label: 'Eckig', value: '2px' },
+  { label: 'Standard', value: '6px' }, // matches DEFAULT_THEME.radius (Linear comfortable)
+  { label: 'Rund', value: '12px' },
 ];
 
 interface Props {
@@ -31,14 +33,14 @@ export function ThemeEditor({ theme, onChange, onSave, saving, saveStatus }: Pro
   const radius = theme.radius ?? DEFAULT_THEME.radius;
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5">
+    <section className="rounded-panel border border-line-subtle bg-panel p-5">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-800">Design anpassen</h2>
-        <span className="text-xs text-slate-400">Kernmechanik bleibt gesperrt</span>
+        <h2 className="text-sm font-ui text-fg">Design anpassen</h2>
+        <span className="text-xs text-fg-quaternary">Kernmechanik bleibt gesperrt</span>
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <span className="text-sm text-slate-600">Akzent:</span>
+        <span className="text-sm text-fg-secondary">Akzent:</span>
         {PRESETS.map((preset) => (
           <button
             key={preset.name}
@@ -46,11 +48,11 @@ export function ThemeEditor({ theme, onChange, onSave, saving, saveStatus }: Pro
             onClick={() => onChange({ ...theme, ...preset.theme })}
             title={preset.name}
             aria-label={preset.name}
-            className={`h-7 w-7 rounded-full border-2 ${accent === preset.theme.accent ? 'border-slate-900' : 'border-white shadow'}`}
+            className={`h-7 w-7 rounded-full border-2 transition duration-150 ease-default focus-visible:focus-ring ${accent === preset.theme.accent ? 'border-fg' : 'border-line-subtle'}`}
             style={{ backgroundColor: preset.theme.accent }}
           />
         ))}
-        <label className="ml-1 flex items-center gap-1 text-sm text-slate-600">
+        <label className="ml-1 flex items-center gap-1 text-sm text-fg-secondary">
           eigene:
           <input
             type="color"
@@ -58,19 +60,19 @@ export function ThemeEditor({ theme, onChange, onSave, saving, saveStatus }: Pro
             onChange={(e) =>
               onChange({ ...theme, accent: e.target.value, accentHover: e.target.value })
             }
-            className="h-7 w-9 cursor-pointer rounded border border-slate-200"
+            className="h-7 w-9 cursor-pointer rounded-standard border border-line-subtle bg-surface"
           />
         </label>
       </div>
 
       <div className="mt-3 flex items-center gap-2">
-        <span className="text-sm text-slate-600">Ecken:</span>
+        <span className="text-sm text-fg-secondary">Ecken:</span>
         {RADII.map((r) => (
           <button
             key={r.value}
             type="button"
             onClick={() => onChange({ ...theme, radius: r.value })}
-            className={`rounded-md border px-2.5 py-1 text-xs ${radius === r.value ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-300 text-slate-600'}`}
+            className={`rounded-comfortable border px-2.5 py-1 text-xs font-ui transition duration-150 ease-default focus-visible:focus-ring ${radius === r.value ? 'border-accent bg-accent text-white' : 'border-line-subtle text-fg-secondary hover:bg-surface'}`}
           >
             {r.label}
           </button>
@@ -78,15 +80,10 @@ export function ThemeEditor({ theme, onChange, onSave, saving, saveStatus }: Pro
       </div>
 
       <div className="mt-4 flex items-center gap-3">
-        <button
-          type="button"
-          onClick={onSave}
-          disabled={saving}
-          className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-        >
+        <Button variant="subtle" onClick={onSave} disabled={saving}>
           {saving ? 'Speichern…' : 'App-Version speichern'}
-        </button>
-        {saveStatus && <span className="text-sm text-emerald-700">{saveStatus}</span>}
+        </Button>
+        {saveStatus && <span className="text-sm text-success">{saveStatus}</span>}
       </div>
     </section>
   );

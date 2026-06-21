@@ -80,13 +80,13 @@ export function Player({ manifest }: { manifest: AppManifest }) {
 
   if (loadError) {
     return (
-      <pre className="whitespace-pre-wrap rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+      <pre className="whitespace-pre-wrap rounded-card border border-error/30 bg-error/10 p-3 text-sm text-error">
         Module konnten nicht geladen werden: {loadError}
       </pre>
     );
   }
   if (!impls) {
-    return <p className="text-sm text-slate-500">Module werden geladen…</p>;
+    return <p className="text-sm text-fg-tertiary">Module werden geladen…</p>;
   }
 
   return (
@@ -102,13 +102,13 @@ export function Player({ manifest }: { manifest: AppManifest }) {
           <section
             key={instanceId}
             style={cardVars}
-            className="rounded-xl border border-slate-200 bg-white p-5"
+            className="rounded-panel border border-line-subtle bg-panel p-5"
           >
             <div className="mb-3 flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--pf-accent)] text-xs font-bold text-[var(--pf-accent-fg)]">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--pf-accent)] text-xs font-ui text-[var(--pf-accent-fg)]">
                 {index + 1}
               </span>
-              <h3 className="font-semibold text-slate-800">{def.title}</h3>
+              <h3 className="font-ui text-fg">{def.title}</h3>
             </div>
             <Ui
               node={node}
@@ -128,14 +128,14 @@ export function Player({ manifest }: { manifest: AppManifest }) {
           type="button"
           onClick={run}
           disabled={running}
-          className="rounded-[var(--pf-radius)] bg-[var(--pf-accent)] px-5 py-2.5 font-medium text-[var(--pf-accent-fg)] hover:bg-[var(--pf-accent-hover)] disabled:opacity-50"
+          className="rounded-[var(--pf-radius)] bg-[var(--pf-accent)] px-5 py-2.5 font-ui text-[var(--pf-accent-fg)] transition duration-150 ease-default hover:bg-[var(--pf-accent-hover)] active:scale-[0.98] focus-visible:focus-ring disabled:opacity-40"
         >
           {running ? 'Wird ausgeführt…' : 'App ausführen'}
         </button>
       </div>
 
       {error && (
-        <pre className="whitespace-pre-wrap rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        <pre className="whitespace-pre-wrap rounded-card border border-error/30 bg-error/10 p-3 text-sm text-error">
           {error}
         </pre>
       )}

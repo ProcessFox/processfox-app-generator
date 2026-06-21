@@ -14,16 +14,16 @@ export function XlsxUploadUi({ provideInput, inputProvided }: NodeUiProps) {
   return (
     <div className="space-y-2">
       <label className="block">
-        <span className="text-sm text-slate-600">Excel-Datei (.xlsx) auswählen</span>
+        <span className="text-sm text-fg-secondary">Excel-Datei (.xlsx) auswählen</span>
         <input
           type="file"
           accept=".xlsx,.xls"
           onChange={handleChange}
-          className="mt-1 block w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-slate-700 hover:file:bg-slate-200"
+          className="mt-1 block w-full text-sm text-fg-tertiary file:mr-3 file:rounded-comfortable file:border-0 file:bg-surface file:px-3 file:py-1.5 file:font-ui file:text-fg-secondary hover:file:bg-level3"
         />
       </label>
       {inputProvided && filename && (
-        <p className="text-sm text-emerald-700">✓ {filename} geladen</p>
+        <p className="text-sm text-success">✓ {filename} geladen</p>
       )}
     </div>
   );

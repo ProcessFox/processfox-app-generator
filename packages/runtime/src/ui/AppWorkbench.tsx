@@ -8,6 +8,7 @@ import {
 import { Player } from './Player.js';
 import { DataFlowPanel } from './DataFlowPanel.js';
 import { ThemeEditor } from './ThemeEditor.js';
+import { Button } from './primitives.js';
 import { useAppActions } from './useAppActions.js';
 
 /**
@@ -36,15 +37,10 @@ export function AppWorkbench({ manifest }: { manifest: AppManifest }) {
         saveStatus={saveStatus}
       />
       <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={downloadStandalone}
-          disabled={exporting}
-          className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
-        >
+        <Button onClick={downloadStandalone} disabled={exporting}>
           {exporting ? 'Export…' : '↓ Als eigenständige App herunterladen (HTML)'}
-        </button>
-        {exportError && <span className="text-sm text-red-700">{exportError}</span>}
+        </Button>
+        {exportError && <span className="text-sm text-error">{exportError}</span>}
       </div>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
         <Player manifest={themed} />

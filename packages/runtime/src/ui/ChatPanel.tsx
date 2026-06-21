@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import type { StreamEvent } from '../lib/agentStream.js';
 import { ThinkingStream } from './ThinkingStream.js';
+import { Button, TextArea } from './primitives.js';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -39,10 +40,10 @@ export function ChatPanel({
   }
 
   return (
-    <aside className="flex h-full flex-col rounded-xl border border-slate-200 bg-white">
-      <header className="border-b border-slate-200 px-4 py-3">
-        <h2 className="text-sm font-semibold text-slate-800">App anpassen</h2>
-        <p className="text-xs text-slate-500">
+    <aside className="flex h-full flex-col rounded-panel border border-line-subtle bg-panel">
+      <header className="border-b border-line-subtle px-4 py-3">
+        <h2 className="text-sm font-ui text-fg">App anpassen</h2>
+        <p className="text-xs text-fg-tertiary">
           Beschreibe Änderungen — der Agent passt die App an.
         </p>
       </header>
@@ -50,7 +51,7 @@ export function ChatPanel({
       <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
         {messages.map((m, i) =>
           m.role === 'user' ? (
-            <div key={i} className="ml-auto max-w-[85%] rounded-lg bg-orange-600 px-3 py-2 text-sm text-white">
+            <div key={i} className="ml-auto max-w-[85%] rounded-card bg-accent px-3 py-2 text-sm text-white">
               {m.text}
             </div>
           ) : (
@@ -59,7 +60,7 @@ export function ChatPanel({
                 <ThinkingStream events={m.events} active={false} />
               )}
               {m.text && (
-                <div className="max-w-[90%] rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-800">
+                <div className="max-w-[90%] rounded-card bg-level3 px-3 py-2 text-sm text-fg-secondary">
                   {m.text}
                 </div>
               )}
@@ -70,14 +71,14 @@ export function ChatPanel({
         {busy && <ThinkingStream events={liveEvents} active />}
 
         {error && (
-          <p className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          <p className="rounded-card border border-error/30 bg-error/10 p-3 text-sm text-error">
             {error}
           </p>
         )}
       </div>
 
-      <form onSubmit={submit} className="border-t border-slate-200 p-3">
-        <textarea
+      <form onSubmit={submit} className="border-t border-line-subtle p-3">
+        <TextArea
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
@@ -85,15 +86,11 @@ export function ChatPanel({
           }}
           rows={2}
           placeholder="z. B. Mach den Akzent blau oder füge einen Filter hinzu…"
-          className="w-full resize-none rounded-lg border border-slate-300 p-2 text-sm focus:border-orange-500 focus:outline-none"
+          className="resize-none"
         />
-        <button
-          type="submit"
-          disabled={busy || draft.trim().length === 0}
-          className="mt-2 w-full rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 disabled:opacity-50"
-        >
+        <Button type="submit" disabled={busy || draft.trim().length === 0} className="mt-2 w-full">
           {busy ? 'Agent arbeitet…' : 'Senden'}
-        </button>
+        </Button>
       </form>
     </aside>
   );
